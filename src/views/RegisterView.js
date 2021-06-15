@@ -5,46 +5,25 @@ import { authOperations } from '../redux/auth';
 import { Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const initialState = { name: '', email: '', password: '' };
+
 export default function RegisterView() {
   const dispatch = useDispatch();
-  const onRegister = useCallback(
-    e => dispatch(authOperations.register(e)),
-    [dispatch],
+  const [user, setUser] = useState(initialState);
+  const { name, email, password } = user;
+
+  const handleChange = ({ target: { name, value } }) => {
+    setUser(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+      dispatch(authOperations.register(user));
+      setUser(initialState);
+    },
+    [dispatch, user],
   );
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleChange = e => {
-    const { name, value } = e.target;
-
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-
-      case 'email':
-        setEmail(value);
-        break;
-
-      case 'password':
-        setPassword(value);
-        break;
-
-      default:
-        return;
-    }
-  };
-
-  const handleSubmit = e => {
-    e.preventDefault();
-
-    onRegister({ name, email, password });
-    setName('');
-    setEmail('');
-    setPassword('');
-  };
 
   return (
     <div>

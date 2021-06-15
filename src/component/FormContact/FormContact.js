@@ -5,13 +5,15 @@ import phoneBookSelectors from '../../redux/phoneBook/phoneBook-selectors';
 import { Button, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+const initialState = { name: '', number: '' };
+
 export default function FormContact() {
   const dispatch = useDispatch();
 
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [user, setUser] = useState(initialState);
+  const { name, number } = user;
 
-  const contact = useSelector(phoneBookSelectors.getAllContacts);
+  const contacts = useSelector(phoneBookSelectors.getAllContacts);
 
   const onAddContact = useCallback(
     (name, number) => dispatch(phoneBookOperations.addContact(name, number)),
@@ -19,30 +21,18 @@ export default function FormContact() {
   );
 
   const reset = () => {
-    setName('');
-    setNumber('');
+    setUser(initialState);
   };
 
   const handleChangeInput = e => {
-    const { name, value } = e.target;
-
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-
-      case 'number':
-        setNumber(value);
-        break;
-
-      default:
-        return;
-    }
+    const { name, value } = e.currentTarget;
+    setUser(prev => ({ ...prev, [name]: value }));
   };
+
   const handleSubmit = e => {
     e.preventDefault();
 
-    if (contact.some(contact => contact.name === name)) {
+    if (contacts.some(contact => contact.name === name)) {
       alert('Этот контакт уже существует');
       reset();
       return;
